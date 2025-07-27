@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:20
 
 # Set the working directory
 WORKDIR /usr/src/app
@@ -6,17 +6,14 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with legacy peer deps to resolve conflicts
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code
 COPY . .
 
-# Build the Angular application
-RUN npm run build --prod
-
 # Expose the port the app runs on
 EXPOSE 4200
 
-# Command to run the application
+# Start the application in development mode
 CMD ["npm", "start"]

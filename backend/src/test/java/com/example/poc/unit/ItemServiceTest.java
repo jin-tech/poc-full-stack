@@ -1,11 +1,15 @@
+package com.example.poc.unit;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.example.poc.exception.ResourceNotFoundException;
 import com.example.poc.model.Item;
 import com.example.poc.repository.ItemRepository;
 import com.example.poc.service.ItemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,8 +33,11 @@ class ItemServiceTest {
 
     @Test
     void testFindAll() {
-        Item item1 = new Item(1L, "Item 1", "Description 1");
-        Item item2 = new Item(2L, "Item 2", "Description 2");
+        Item item1 = new Item("Item 1", "Description 1");
+        item1.setId(1L);
+        Item item2 = new Item("Item 2", "Description 2");
+        item2.setId(2L);
+        
         when(itemRepository.findAll()).thenReturn(Arrays.asList(item1, item2));
 
         List<Item> items = itemService.findAll();
@@ -42,45 +49,61 @@ class ItemServiceTest {
 
     @Test
     void testFindById() {
-        Item item = new Item(1L, "Item 1", "Description 1");
+        Item item = new Item("Test Item", "Test Description");
+        item.setId(1L);
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
-        Item foundItem = itemService.findById(1L);
+        Item result = itemService.findById(1L);
 
-        assertNotNull(foundItem);
-        assertEquals("Item 1", foundItem.getName());
+        assertEquals("Test Item", result.getName());
+        assertEquals("Test Description", result.getDescription());
+    }
+
+    @Test
+    void testFindByIdNotFound() {
+        when(itemRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> itemService.findById(1L));
     }
 
     @Test
     void testSave() {
-        Item item = new Item(null, "Item 1", "Description 1");
-        Item savedItem = new Item(1L, "Item 1", "Description 1");
-        when(itemRepository.save(item)).thenReturn(savedItem);
+        Item newItem = new Item("New Item", "New Description");
+        Item savedItem = new Item("New Item", "New Description");
+        savedItem.setId(1L);
+        
+        when(itemRepository.save(newItem)).thenReturn(savedItem);
 
-        Item result = itemService.save(item);
+        Item result = itemService.save(newItem);
 
-        assertNotNull(result);
+        assertEquals("New Item", result.getName());
         assertEquals(1L, result.getId());
     }
 
     @Test
     void testUpdate() {
-        Item existingItem = new Item(1L, "Item 1", "Description 1");
-        Item updatedItem = new Item(1L, "Updated Item", "Updated Description");
+        Item existingItem = new Item("Old Item", "Old Description");
+        existingItem.setId(1L);
+        Item updatedItem = new Item("Updated Item", "Updated Description");
+        
         when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
-        when(itemRepository.save(updatedItem)).thenReturn(updatedItem);
+        when(itemRepository.save(ArgumentMatchers.any(Item.class))).thenReturn(existingItem);
 
         Item result = itemService.update(1L, updatedItem);
 
-        assertNotNull(result);
         assertEquals("Updated Item", result.getName());
+        assertEquals("Updated Description", result.getDescription());
     }
 
     @Test
     void testDelete() {
-        doNothing().when(itemRepository).deleteById(1L);
+        Item existingItem = new Item("Item to Delete", "Description");
+        existingItem.setId(1L);
+        
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
 
         assertDoesNotThrow(() -> itemService.delete(1L));
-        verify(itemRepository, times(1)).deleteById(1L);
+        
+        verify(itemRepository, times(1)).delete(existingItem);
     }
 }

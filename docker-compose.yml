@@ -18,6 +18,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4200:4200"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend/src:/usr/src/app/src
+      - ./frontend/angular.json:/usr/src/app/angular.json
+      - ./frontend/tsconfig.json:/usr/src/app/tsconfig.json
     depends_on:
       - backend
 

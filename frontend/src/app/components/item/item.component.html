@@ -1,6 +1,29 @@
-<div class="item">
-  <h2>{{ item.name }}</h2>
-  <p>{{ item.description }}</p>
-  <button (click)="editItem(item.id)">Edit</button>
-  <button (click)="deleteItem(item.id)">Delete</button>
+<div class="items-container">
+  <h1>Items Management</h1>
+  
+  <!-- Item List -->
+  <div class="items-list">
+    <h2>Items</h2>
+    <div class="item" *ngFor="let item of items">
+      <h3>{{ item.name }}</h3>
+      <p>{{ item.description }}</p>
+      <button (click)="selectItem(item)">Select</button>
+      <button (click)="deleteItem(item)">Delete</button>
+    </div>
+  </div>
+
+  <!-- Selected Item Details -->
+  <div class="selected-item" *ngIf="selectedItem">
+    <h2>Selected Item</h2>
+    <h3>{{ selectedItem.name }}</h3>
+    <p>{{ selectedItem.description }}</p>
+    <button (click)="updateItem(selectedItem)">Update</button>
+    <button (click)="selectedItem = null">Clear Selection</button>
+  </div>
+
+  <!-- Create New Item -->
+  <div class="create-item">
+    <h2>Create New Item</h2>
+    <button (click)="createItem({name: 'New Item', description: 'Description'})">Create Sample Item</button>
+  </div>
 </div>
