@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -7,7 +8,7 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AppComponent],
+      imports: [AppComponent, RouterTestingModule],
     }).compileComponents();
   });
 
@@ -21,12 +22,12 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it(`should have as title 'poc-project'`, () => {
-    expect(component.title).toEqual('poc-project');
+  it(`should have as title 'POC Project'`, () => {
+    expect(component.title).toEqual('POC Project');
   });
 
   it('should render title in a h1 tag', () => {
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to poc-project!');
+    expect(compiled.querySelector('h1').textContent).toContain('POC Project');
   });
 });
